@@ -36,12 +36,22 @@ def create_buttons(quality_list):
 
 # Extract YouTube information.
 def extractYt(yturl):
+    player_clients = [
+        client.strip()
+        for client in os.getenv(
+            "YTDLP_PLAYER_CLIENTS", "android_vr,ios,web_safari"
+        ).split(",")
+        if client.strip()
+    ]
     ydl_opts = {
         'quiet': True,
         'no_warnings': True,
         'noplaylist': True,
         # yt-dlp now uses Deno/EJS to solve YouTube's JavaScript challenges.
         'js_runtimes': {'deno': {}},
+        'extractor_args': {
+            'youtube': {'player_client': player_clients},
+        },
     }
     youtube_proxy = os.getenv("YOUTUBE_PROXY")
     if youtube_proxy:

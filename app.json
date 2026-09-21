@@ -26,6 +26,11 @@
     "YOUTUBE_PROXY": {
       "description": "Optional HTTP/SOCKS proxy URL if YouTube blocks the Heroku IP",
       "required": false
+    },
+    "YTDLP_PLAYER_CLIENTS": {
+      "description": "Optional comma-separated yt-dlp YouTube clients",
+      "value": "android_vr,ios,web_safari",
+      "required": false
     }
   },
   "buildpacks": [
