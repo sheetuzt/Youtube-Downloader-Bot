@@ -2,6 +2,7 @@ import asyncio
 import os
 
 from pyrogram import Client, ContinuePropagation
+from pyrogram.enums import ChatAction
 from pyrogram.types import (InlineKeyboardButton,
                             InlineKeyboardMarkup,
                             InputMediaDocument,
@@ -151,7 +152,10 @@ async def send_file(c, q, med, filename, thumb_image_path):
     try:
         await q.edit_message_reply_markup(
             InlineKeyboardMarkup([[InlineKeyboardButton("Uploading...", callback_data="down")]]))
-        await c.send_chat_action(chat_id=q.message.chat.id, action="upload_document")
+        await c.send_chat_action(
+            chat_id=q.message.chat.id,
+            action=ChatAction.UPLOAD_DOCUMENT,
+        )
         # this one is not working
         await q.edit_message_media(media=med)
     except Exception as e:
