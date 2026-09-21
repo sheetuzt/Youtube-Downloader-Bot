@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 import asyncio
+import os
 
 from pyrogram.types import InlineKeyboardButton
 import yt_dlp as youtube_dl
@@ -39,7 +40,12 @@ def extractYt(yturl):
         'quiet': True,
         'no_warnings': True,
         'noplaylist': True,
+        # yt-dlp now uses Deno/EJS to solve YouTube's JavaScript challenges.
+        'js_runtimes': {'deno': {}},
     }
+    youtube_proxy = os.getenv("YOUTUBE_PROXY")
+    if youtube_proxy:
+        ydl_opts['proxy'] = youtube_proxy
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         quality_list = []
         result = ydl.extract_info(yturl, download=False)

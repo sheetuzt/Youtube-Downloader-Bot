@@ -32,8 +32,12 @@ async def ytdl(_, message):
         user_time[message.chat.id] = now + \
                                      timedelta(minutes=youtube_next_fetch)
 
-    except Exception:
-        await message.reply_text("`Failed To Fetch Youtube Data... 😔 \nPossible Youtube Blocked server ip \n#error`")
+    except Exception as exc:
+        print(f"YouTube metadata extraction failed: {exc!r}")
+        await message.reply_text(
+            "`Failed to fetch YouTube data. The YouTube server may be "
+            "blocking this hosting IP. Please try again later.`"
+        )
         return
     buttons = InlineKeyboardMarkup(list(create_buttons(formats)))
     sentm = await message.reply_text("Processing Youtube Url 🔎 🔎 🔎")

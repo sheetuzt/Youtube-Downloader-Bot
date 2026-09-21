@@ -22,11 +22,18 @@
     "BOT_TOKEN": {
       "description": "Telegram bot token from @BotFather",
       "required": true
+    },
+    "YOUTUBE_PROXY": {
+      "description": "Optional HTTP/SOCKS proxy URL if YouTube blocks the Heroku IP",
+      "required": false
     }
   },
   "buildpacks": [
     {
       "url": "https://github.com/jonathanong/heroku-buildpack-ffmpeg-latest.git"
+    },
+    {
+      "url": "https://github.com/chibat/heroku-buildpack-deno.git"
     },
     {
       "url": "heroku/python"
