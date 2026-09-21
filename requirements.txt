@@ -1,6 +1,6 @@
 TgCrypto>=1.2.5
 pyrogram==1.4.16
-git+https://github.com/ytdl-org/youtube-dl
+yt-dlp>=2024.12.13
 wget
 pillow
 hachoir
