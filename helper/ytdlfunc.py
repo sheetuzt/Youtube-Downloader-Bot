@@ -2,10 +2,17 @@ from __future__ import unicode_literals
 
 import asyncio
 
-from pyrogram import Client, Filters, StopPropagation, InlineKeyboardButton, InlineKeyboardMarkup
+from pyrogram.types import InlineKeyboardButton
 import yt_dlp as youtube_dl
 
 from utils.util import humanbytes
+
+
+def _downloaded_path(stdout, stderr):
+    lines = [line.strip() for line in stdout.splitlines() if line.strip()]
+    if not lines:
+        raise RuntimeError(f"yt-dlp did not return a file path: {stderr.strip()}")
+    return lines[-1]
 
 
 def buttonmap(item):
@@ -60,8 +67,10 @@ async def downloadvideocli(command_to_exec):
     t_response = stdout.decode().strip()
     print(e_response)
     # yt-dlp prints the final path because the command includes
-    # --print after_move:filepath. Keep the last non-empty line as the path.
-    return next(line for line in reversed(t_response.splitlines()) if line.strip()).strip()
+    # --print after_move:filepath.
+    if process.returncode != 0:
+        raise RuntimeError(f"Video download failed: {e_response}")
+    return _downloaded_path(t_response, e_response)
 
 
 async def downloadaudiocli(command_to_exec):
@@ -75,4 +84,6 @@ async def downloadaudiocli(command_to_exec):
     t_response = stdout.decode().strip()
     print("Download error:", e_response)
 
-    return next(line for line in reversed(t_response.splitlines()) if line.strip()).strip()
+    if process.returncode != 0:
+        raise RuntimeError(f"Audio download failed: {e_response}")
+    return _downloaded_path(t_response, e_response)

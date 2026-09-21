@@ -1,19 +1,16 @@
 import asyncio
 import os
 
-from pyrogram import (Client,
-                      InlineKeyboardButton,
-                      InlineKeyboardMarkup,
-                      ContinuePropagation,
-                      InputMediaDocument,
-                      InputMediaVideo,
-                      InputMediaAudio)
+from pyrogram import Client, ContinuePropagation
+from pyrogram.types import (InlineKeyboardButton,
+                            InlineKeyboardMarkup,
+                            InputMediaDocument,
+                            InputMediaVideo,
+                            InputMediaAudio)
 
 from helper.ffmfunc import duration
 from helper.ytdlfunc import downloadvideocli, downloadaudiocli
 from PIL import Image
-from hachoir.metadata import extractMetadata
-from hachoir.parser import createParser
 
 @Client.on_callback_query()
 async def catch_youtube_fmtid(c, m):
@@ -45,25 +42,20 @@ async def catch_youtube_dldata(c, q):
     # Callback Data Check
     yturl = cb_data.split("||")[-1]
     format_id = cb_data.split("||")[-2]
-    thumb_image_path = "/app/downloads" + \
-        "/" + str(q.message.chat.id) + ".jpg"
+    thumb_image_path = os.path.join(
+        os.getcwd(), "downloads", f"{q.message.chat.id}.jpg"
+    )
     print(thumb_image_path)
+    width = 0
+    height = 0
     if os.path.exists(thumb_image_path):
-        width = 0
-        height = 0
-        metadata = extractMetadata(createParser(thumb_image_path))
-        #print(metadata)
-        if metadata.has("width"):
-            width = metadata.get("width")
-        if metadata.has("height"):
-            height = metadata.get("height")
         img = Image.open(thumb_image_path)
+        width, height = img.size
         if cb_data.startswith(("audio", "docaudio", "docvideo")):
-            img.resize((320, height))
+            img = img.resize((320, height))
         else:
-            img.resize((90, height))
+            img = img.resize((90, height))
         img.save(thumb_image_path, "JPEG")
-     #   print(thumb_image_path)
     if not cb_data.startswith(("video", "audio", "docaudio", "docvideo")):
         print("no data found")
         raise ContinuePropagation
@@ -81,13 +73,14 @@ async def catch_youtube_dldata(c, q):
     audio_command = [
         "yt-dlp",
         "-c",
+        "--no-playlist",
         "--no-progress",
         "--no-warnings",
         "--print", "after_move:filepath",
         "--prefer-ffmpeg",
+        "-f", format_id,
         "--extract-audio",
         "--audio-format", "mp3",
-        "--audio-quality", format_id,
         "-o", filepath,
         yturl,
 
@@ -96,11 +89,13 @@ async def catch_youtube_dldata(c, q):
     video_command = [
         "yt-dlp",
         "-c",
+        "--no-playlist",
         "--no-progress",
         "--no-warnings",
         "--print", "after_move:filepath",
         "--embed-subs",
-        "-f", f"{format_id}+bestaudio",
+        "-f", f"{format_id}+bestaudio/best",
+        "--merge-output-format", "mp4",
         "-o", filepath,
         "--hls-prefer-ffmpeg", yturl]
 
@@ -146,12 +141,12 @@ async def catch_youtube_dldata(c, q):
             caption=os.path.basename(filename),
         )
     if med:
-        loop.create_task(send_file(c, q, med, filename))
+        loop.create_task(send_file(c, q, med, filename, thumb_image_path))
     else:
         print("med not found")
 
 
-async def send_file(c, q, med, filename):
+async def send_file(c, q, med, filename, thumb_image_path):
     print(med)
     try:
         await q.edit_message_reply_markup(

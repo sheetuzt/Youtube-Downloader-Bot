@@ -1,29 +1,42 @@
 {
   "name": "YouTube Downloader Bot",
-  "description": "A telegram bot To Download Youtube Files ",
+  "description": "A Telegram bot to download single YouTube videos",
   "logo": "https://telegra.ph/file/6a3b1febade2313dd0dca.jpg",
   "keywords": [
-    "Youtube","YoutubeDownloader"
+    "youtube",
+    "youtube-downloader",
+    "telegram-bot"
   ],
-  "repository": "https://github.com/aryanvikash/Youtube-Downloader-Bot",
-  "success_url": "https://t.me/youtubdlbot",
-  "website": "https://github.com/aryanvikash/Youtube-Downloader-Bot",
+  "repository": "https://github.com/sheetuzt/Youtube-Downloader-Bot",
+  "success_url": "https://telegram.me/",
+  "website": "https://github.com/sheetuzt/Youtube-Downloader-Bot",
   "env": {
-        "API_ID": {"description": "Get this value from https://my.telegram.org", "required": true},
-        "API_HASH": {"description": "Get this value from https://my.telegram.org" , "required": true},
-        "BOT_TOKEN": {"description": "Get Bot Token From BotFather Bot","required": true}
-  },
-      "buildpacks": [
-        {"url": "https://github.com/jonathanong/heroku-buildpack-ffmpeg-latest.git"},
-        {"url": "heroku/python"}
-    ],
-  "formation": {
-        "worker": {
-            "quantity": 1,
-            "size": "free"
-        }
+    "API_ID": {
+      "description": "Telegram API ID from https://my.telegram.org",
+      "required": true
     },
-      "stack": "heroku-20"
-
-
+    "API_HASH": {
+      "description": "Telegram API hash from https://my.telegram.org",
+      "required": true
+    },
+    "BOT_TOKEN": {
+      "description": "Telegram bot token from @BotFather",
+      "required": true
+    }
+  },
+  "buildpacks": [
+    {
+      "url": "https://github.com/jonathanong/heroku-buildpack-ffmpeg-latest.git"
+    },
+    {
+      "url": "heroku/python"
+    }
+  ],
+  "formation": {
+    "worker": {
+      "quantity": 1,
+      "size": "basic"
+    }
+  },
+  "stack": "heroku-24"
 }
